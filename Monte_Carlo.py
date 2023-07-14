@@ -1,4 +1,5 @@
-import gym
+
+import gymnasium as gym
 import numpy as np
 
 np.set_printoptions(suppress=True)
@@ -25,13 +26,13 @@ def monte_carlo(env, num_episodes, gamma=0.9):
         done = False
         while not done:
             action = env.action_space.sample()
-            next_state, reward, a, b, _ = env.step(action)
+            next_state, reward, terminated, truncated, _ = env.step(action)
 
             episode_states.append(state)
             episode_rewards.append(reward)
 
             state = next_state  # Extract state value from tuple
-            if a or b:
+            if terminated or truncated:
                 done = True
         # print(episode_states)
         # print(episode_rewards)
