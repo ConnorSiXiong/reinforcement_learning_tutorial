@@ -1,3 +1,9 @@
+"""
+This is the breakout training v1.0.
+The model learns limited info from the env.
+
+This is dispatched.
+"""
 import gymnasium as gym
 import torch
 import random
@@ -18,7 +24,7 @@ random.seed(42)
 # Set up the Breakout environment
 # env = gym.make('ALE/Breakout-v5', render_mode="human", frameskip=1)
 env = gym.make('ALE/Breakout-v5', render_mode="rgb_array")
-state, info = env.reset()
+state, info = env.reset(seed=50)
 
 # Define actions for the Breakout game
 # The available actions are 0 (no-op), 1 (fire), 2 (move right), and 3 (move left)
@@ -29,7 +35,7 @@ agent = DQNAgent(env, memory_capacity)
 states_buffer = deque(maxlen=k_frames)
 terminated_counter = 0
 # Play the game for a few steps
-num_episodes = 1000000
+num_episodes = 20000
 reward_list = []
 reward_counter = 0
 for i in range(num_episodes):
@@ -40,12 +46,16 @@ for i in range(num_episodes):
     # Perform the action and observe the outcome
     next_state, reward, terminated, _, info = env.step(action)
     if reward:
+        print('reward_counter', reward_counter)
         reward_counter += 1
 
     if terminated:
+
         terminated_counter += 1
+        print('reward_counter', reward_counter)
         reward_list.append(reward_counter)
-        env.reset()
+        reward_counter = 0
+        env.reset(seed=50)
 
     # Add experience
     process_state = process_image(state)
@@ -77,7 +87,7 @@ for i in range(num_episodes):
     #     print('hey')
     #     agent.update()
 
-    if terminated_counter == 20:
+    if terminated_counter == 10:
         print('round:', i)
         agent.update()
         terminated_counter = 0
