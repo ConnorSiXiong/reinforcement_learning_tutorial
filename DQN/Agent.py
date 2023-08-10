@@ -115,7 +115,7 @@ class DQNAgent:
 
     def update(self):
         print('model update')
-        self.target_Q = copy.deepcopy(self.Q)
+        self.target_Q.load_state_dict(self.Q.state_dict())
 
     # ----- ReplayMemory method -----
     def add(self, experience):
