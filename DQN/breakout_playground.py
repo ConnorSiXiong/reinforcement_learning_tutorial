@@ -1,5 +1,7 @@
 import gymnasium as gym
-
+from ImageProcessing import process_image
+from collections import deque
+import numpy as np
 # Set up the Breakout environment
 env = gym.make('ALE/Breakout-v5', render_mode="human")
 env.reset()
@@ -7,7 +9,7 @@ env.reset()
 # Define actions for the Breakout game
 # The available actions are 0 (no-op), 1 (fire), 2 (move right), and 3 (move left)
 ACTIONS = [0, 1, 2, 3]
-
+states_buffer = deque(maxlen=4)
 
 # Play the game for a few steps
 for i in range(100000):
@@ -17,6 +19,7 @@ for i in range(100000):
     # Perform the action and observe the outcome
     observation, reward, terminated, truncated, info = env.step(action)
     print('observation', observation.shape)
+    print('processed_image', process_image(observation).shape)
     print('reward', reward)
     print("terminated", terminated)
     print("truncated", truncated)
@@ -24,11 +27,14 @@ for i in range(100000):
     if reward:
         print('xxx reward', reward)
     # Render the game (optional, you can comment this out to run the game in the background)
-
+    process_state = process_image(observation)
+    states_buffer.append(process_state)
+    stack_states = np.stack(states_buffer, axis=2)
+    print('stack_states', stack_states.shape)
     # Check if the game is over (done=True) and reset if necessary
     if terminated or truncated:
         print('observation', observation.shape)
-        print(observation)
+        print(np.sum(observation))
         print('reward', reward)
         print("aaa terminated", terminated)
         print("aaa truncated", truncated)
